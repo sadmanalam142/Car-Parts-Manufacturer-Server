@@ -86,6 +86,13 @@ async function run() {
             res.send(parts)
         })
 
+        app.get('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const orders = await orderCollection.findOne(query);
+            res.send(orders)
+        })
+
         app.get('/order', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const decodedEmail = req.decoded.email;
