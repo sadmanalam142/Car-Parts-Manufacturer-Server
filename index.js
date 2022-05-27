@@ -52,6 +52,19 @@ async function run() {
             res.send(parts)
         })
 
+        app.post('/part', verifyJWT, verifyAdmin, async (req, res) => {
+            const part = req.body;
+            const parts = await partCollection.insertOne(part);
+            res.send(parts)
+        })
+
+        app.delete('/part/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const parts = await partCollection.deleteOne(query);
+            res.send(parts)
+        })
+
         app.get('/part/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
