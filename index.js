@@ -36,6 +36,17 @@ async function run() {
         const reviewCollection = client.db("car_parts_manufacturer").collection("reviews");
         const userCollection = client.db("car_parts_manufacturer").collection("users");
 
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'Forbidden Access' })
+            }
+        }
+
         app.get('/part', async (req, res) => {
             const parts = await partCollection.find().toArray();
             res.send(parts)
@@ -97,7 +108,14 @@ async function run() {
             res.send(users)
         })
 
-        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+        app.get('/admin/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
+        })
+
+        app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
             const updateDoc = {
