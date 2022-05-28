@@ -36,6 +36,7 @@ async function run() {
         const orderCollection = client.db("car_parts_manufacturer").collection("orders");
         const reviewCollection = client.db("car_parts_manufacturer").collection("reviews");
         const userCollection = client.db("car_parts_manufacturer").collection("users");
+        const paymentCollection = client.db("car_parts_manufacturer").collection("payments");
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -107,9 +108,31 @@ async function run() {
             }
         })
 
+        app.patch('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                },
+            };
+            const result = await paymentCollection.insertOne(payment);
+            const updatedOrder = await orderCollection.updateOne(filter, updateDoc);
+            res.send(updateDoc);
+        })
+
         app.post('/order', async (req, res) => {
             const order = req.body;
             const orders = await orderCollection.insertOne(order);
+            res.send(orders)
+        })
+
+        app.delete('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const orders = await orderCollection.deleteOne(query);
             res.send(orders)
         })
 
