@@ -141,7 +141,7 @@ async function run() {
             res.send(orders)
         })
 
-        app.put('/order/:id', async (req, res) => {
+        app.put('/order/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const shippingUpdate = req.body;
             const filter = { _id: ObjectId(id) };
