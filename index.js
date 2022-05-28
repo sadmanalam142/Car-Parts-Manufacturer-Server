@@ -88,6 +88,11 @@ async function run() {
             res.send(parts)
         })
 
+        app.get('/order', verifyJWT, async (req, res) => {
+            const orders = await orderCollection.find().toArray();
+            res.send(orders);
+        })
+
         app.get('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -133,6 +138,20 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const orders = await orderCollection.deleteOne(query);
+            res.send(orders)
+        })
+
+        app.put('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const shippingUpdate = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: shippingUpdate.status
+                }
+            };
+            const orders = await orderCollection.updateOne(filter, updateDoc, options);
             res.send(orders)
         })
 
