@@ -171,6 +171,13 @@ async function run() {
             res.send(users)
         })
 
+        app.get('/user/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const query = {email: email};
+            const users = await userCollection.findOne(query);
+            res.send(users)
+        })
+
         app.get('/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
@@ -187,6 +194,19 @@ async function run() {
             const users = await userCollection.updateOne(filter, updateDoc);
             res.send(users)
         })
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const profile = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: profile,
+            };
+            const users = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(users)
+        })
+
 
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
