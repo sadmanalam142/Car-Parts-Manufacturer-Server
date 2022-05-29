@@ -36,6 +36,7 @@ async function run() {
         const orderCollection = client.db("car_parts_manufacturer").collection("orders");
         const reviewCollection = client.db("car_parts_manufacturer").collection("reviews");
         const userCollection = client.db("car_parts_manufacturer").collection("users");
+        const profileCollection = client.db("car_parts_manufacturer").collection("profiles");
         const paymentCollection = client.db("car_parts_manufacturer").collection("payments");
 
         const verifyAdmin = async (req, res, next) => {
@@ -171,11 +172,11 @@ async function run() {
             res.send(users)
         })
 
-        app.get('/user/:email', verifyJWT, async (req, res) => {
+        app.get('/profile/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
-            const query = {email: email};
-            const users = await userCollection.findOne(query);
-            res.send(users)
+            const query = { email: email };
+            const infos = await profileCollection.findOne(query);
+            res.send(infos)
         })
 
         app.get('/admin/:email', verifyJWT, async (req, res) => {
@@ -195,7 +196,7 @@ async function run() {
             res.send(users)
         })
 
-        app.put('/user/:email', async (req, res) => {
+        app.put('/profile/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const profile = req.body;
             const filter = { email: email };
@@ -203,8 +204,8 @@ async function run() {
             const updateDoc = {
                 $set: profile,
             };
-            const users = await userCollection.updateOne(filter, updateDoc, options);
-            res.send(users)
+            const infos = await profileCollection.updateOne(filter, updateDoc, options);
+            return res.send(infos)
         })
 
 
