@@ -101,7 +101,7 @@ async function run() {
             res.send(orders)
         })
 
-        app.get('/order', verifyJWT, async (req, res) => {
+        app.get('/order/email', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const decodedEmail = req.decoded.email;
             if (email === decodedEmail) {
