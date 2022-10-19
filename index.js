@@ -107,10 +107,10 @@ async function run() {
             if (email === decodedEmail) {
                 const query = { email: email };
                 const orders = await orderCollection.find(query).toArray();
-                res.send(orders)
+               return res.send(orders)
             }
             else {
-                res.status(403).send({ message: 'Forbidden Access' })
+               return res.status(403).send({ message: 'Forbidden Access' })
             }
         })
 
